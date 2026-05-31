@@ -198,8 +198,41 @@ const SYM  = { add:'+', subtract:'−', multiply:'×', divide:'÷', percent:'%' 
 
   /* ── PWA: Install Prompt ── */
   let deferredPrompt;
+  const installBanner = document.getElementById('installBanner');
+  const installBtn = document.getElementById('installBtn');
+  const installClose = document.getElementById('installClose');
+
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    // Aqui você poderia mostrar um botão "Instalar" customizado
+    if (installBanner) {
+      installBanner.hidden = false;
+    }
+  });
+
+  installBtn && installBtn.addEventListener('click', function() {
+    if (!deferredPrompt) return;
+    installBanner.hidden = true;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choiceResult) {
+      if (choiceResult.outcome === 'accepted') {
+        showToast('App instalado com sucesso');
+      } else {
+        showToast('Instalação cancelada');
+      }
+      deferredPrompt = null;
+    });
+  });
+
+  installClose && installClose.addEventListener('click', function() {
+    if (installBanner) {
+      installBanner.hidden = true;
+    }
+  });
+
+  window.addEventListener('appinstalled', function() {
+    if (installBanner) {
+      installBanner.hidden = true;
+    }
+    showToast('App instalado');
   });

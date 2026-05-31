@@ -32,6 +32,44 @@ header { padding: 32px 0 20px; text-align: center; }
 header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; letter-spacing: -.5px; }
 header p  { font-size: .82rem; color: var(--muted); margin-top: 4px; font-weight: 300; }
 
+.install-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.install-banner[hidden] { display: none; }
+.install-text { min-width: 0; }
+.install-text strong { display: block; font-size: .95rem; margin-bottom: 4px; }
+.install-text span { display: block; font-size: .82rem; color: var(--muted); line-height: 1.3; }
+.install-actions { display: flex; align-items: center; gap: 8px; }
+.btn-install {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--rs);
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.btn-install:hover { background: #256858; }
+.install-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.install-close:hover { color: var(--text); }
+
 /* CARD base */
 .card {
   background: var(--surface);
