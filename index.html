@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Nomeie cada valor, some tudo e divida a conta facilmente entre pessoas.">
+<meta name="theme-color" content="#2E7D6B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Racha">
+<meta name="apple-mobile-web-app-icon" content="assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="assets/manifest/manifest.json">
+<link rel="shortcut icon" href="assets/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+<title>Racha — Divisor de Contas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Racha Conta</h1>
+    <p>Nomeie cada valor, some tudo e divida.</p>
+  </header>
+
+  <!-- INPUT CARD -->
+  <div class="card input-card">
+    <div class="input-row">
+      <div class="field-wrap field-name">
+        <label for="itemName">Nome do item</label>
+        <input type="text" id="itemName" placeholder="ex.: Pizza" autocomplete="off" maxlength="30">
+      </div>
+      <div class="field-wrap">
+        <label for="itemValue">Valor</label>
+        <input type="number" id="itemValue" class="val-input" placeholder="0,00" inputmode="decimal" min="0" step="any">
+      </div>
+    </div>
+
+    <span class="op-label">Operação</span>
+    <div class="op-selector">
+      <button class="op-btn active" data-op="add"      onclick="setOp(this)">+</button>
+      <button class="op-btn"        data-op="subtract" onclick="setOp(this)">−</button>
+      <button class="op-btn"        data-op="multiply" onclick="setOp(this)">×</button>
+      <button class="op-btn"        data-op="divide"   onclick="setOp(this)">÷</button>
+      <button class="op-btn"        data-op="percent"  onclick="setOp(this)">%</button>
+    </div>
+
+    <div class="pct-tip" id="pctTip">
+      💡 <strong>%</strong>: acréscimo ou desconto percentual sobre o total atual.
+      Ex.: total R$100 + 10% gorjeta → soma R$10.
+    </div>
+
+    <button class="btn-add" onclick="addItem()">
+      Registrar
+    </button>
+  </div>
+
+  <!-- HISTORY CARD -->
+  <div class="card history-card">
+    <div class="history-header">
+      <span class="history-title">Histórico</span>
+      <button class="btn-clear" onclick="clearAll()">Limpar tudo</button>
+    </div>
+    <ul class="history-list" id="historyList">
+      <li class="history-empty">Nenhum item ainda…</li>
+    </ul>
+    <div class="total-row">
+      <span class="total-label">Total</span>
+      <div class="total-right">
+        <button class="btn-split" onclick="openSplit()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="12" r="2"/><circle cx="16" cy="6" r="2"/><circle cx="16" cy="18" r="2"/>
+            <line x1="9.9" y1="10.8" x2="14.1" y2="7.2"/><line x1="9.9" y1="13.2" x2="14.1" y2="16.8"/>
+          </svg>
+          Dividir
+        </button>
+        <span class="total-value" id="totalValue">R$ 0,00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-row">
+    <button class="btn-action btn-copy" onclick="copyHistory()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copiar
+    </button>
+    <button class="btn-action btn-share" onclick="shareHistory()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      Compartilhar
+    </button>
+  </div>
+</div>
+
+<!-- SPLIT MODAL -->
+<div class="modal-backdrop" id="splitModal">
+  <div class="modal" id="modalBox">
+    <div class="modal-drag"></div>
+    <div class="modal-title">Dividir a conta</div>
+    <p class="modal-sub">Quanto cada pessoa deve pagar?</p>
+
+    <div class="modal-total-ref">
+      <span class="ref-label">Total da conta</span>
+      <span class="ref-val" id="modalTotalRef">R$ 0,00</span>
+    </div>
+
+    <div class="people-row">
+      <span class="people-lbl">Pessoas</span>
+      <div class="stepper">
+        <button class="step-btn" onclick="changePeople(-1)">−</button>
+        <input class="step-val" type="number" id="peopleCount" value="2" min="1" max="999" inputmode="numeric">
+        <button class="step-btn" onclick="changePeople(1)">+</button>
+      </div>
+    </div>
+
+    <div class="split-result">
+      <span class="split-lbl">Por pessoa</span>
+      <span class="split-val" id="splitValue">R$ 0,00</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-m-close" onclick="closeSplit()">Fechar</button>
+      <button class="btn-m-share" onclick="shareSplit()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Compartilhar divisão
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/app.js" defer></script>
+</body>
+</html>
