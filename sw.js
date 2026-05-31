@@ -1,7 +1,8 @@
 const CACHE_NAME = 'racha-pwa-v1';
 const ASSETS = [
-  '/',
   'index.html',
+  'css/style.css',
+  'js/app.js',
   'assets/manifest/manifest.json',
   'assets/icons/icon-192.png',
   'assets/icons/icon-512.png',
